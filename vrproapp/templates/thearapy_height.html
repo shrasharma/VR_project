@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Pre-assessment — Fear of Heights</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="universe" aria-hidden="true">
+    <div class="planet" style="width:220px;height:220px;left:68%;top:-40px"></div>
+  </div>
+
+  <header class="header">
+    <div class="brand">VR Phobia Therapy</div>
+    <nav>
+      <a href="home.html">Back</a>
+      <a href="signup.html" class="button primary">Sign Up</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section style="max-width:760px;margin:34px auto;">
+      <h1>Select: Fear of Heights — Pre-assessment</h1>
+      <p style="color:var(--muted)">Complete this short questionnaire so we can personalize your VR module intensity.</p>
+
+      <form class="form-wrap" action="vr_height.html" method="get">
+        <div class="form-row">
+          <label for="name">Full name</label>
+          <input id="name" type="text" name="full_name" placeholder="Your full name (optional)">
+        </div>
+
+        <div class="form-row">
+          <label for="email">Email</label>
+          <input id="email" type="email" name="email" required placeholder="you@example.com">
+        </div>
+
+        <div class="form-row">
+          <label>How severe is your fear today?</label>
+          <input type="range" name="severity" min="0" max="10" value="5">
+          <small style="color:var(--muted)">0 = no anxiety, 10 = extreme anxiety</small>
+        </div>
+
+        <div class="form-row">
+          <label for="history">Have you had therapy before?</label>
+          <select id="history" name="therapy_history">
+            <option value="no">No</option>
+            <option value="brief">Brief</option>
+            <option value="ongoing">Ongoing</option>
+          </select>
+        </div>
+
+        <div class="form-row checkbox-row">
+          <input id="consent" type="checkbox" name="consent" required>
+          <label for="consent" style="margin:0">I consent to a safe, therapist-guided VR assessment</label>
+        </div>
+
+        <div style="display:flex;gap:12px;margin-top:8px">
+          <button type="submit" class="button primary">Proceed to VR Therapy →</button>
+          <a class="button" href="home.html">Cancel</a>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <footer>
+    &copy; 2025 VR Phobia Therapy
+  </footer>
+</body>
+</html>

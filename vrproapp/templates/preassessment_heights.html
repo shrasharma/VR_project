@@ -1,0 +1,288 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pre-Assessment - Fear of Heights</title>
+  <style>
+    :root {
+      --primary: #5DA399;
+      --secondary: #E6F5F3;
+      --accent: #2E5C54;
+      --background: #000000;
+      --text: #ffffff;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background: radial-gradient(circle at 20% 30%, #0b0f1a, #000);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    header {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      background: rgba(0,0,0,0.85);
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 30px;
+      z-index: 1000;
+    }
+    header h2 { color: var(--secondary); }
+    nav a {
+      color: white;
+      margin: 0 12px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    nav a:hover { color: var(--primary); }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      padding: 0 20px;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2.3rem;
+      margin-bottom: 25px;
+      color: var(--secondary);
+    }
+
+    .question-box {
+      background: rgba(20, 40, 40, 0.85);
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 0 20px var(--primary);
+      width: 90%;
+      max-width: 600px;
+    }
+
+    .question { font-size: 1.3rem; margin-bottom: 25px; }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 25px;
+    }
+
+    label {
+      display: block;
+      width: 100%;
+      text-align: center;
+      font-size: 1.05rem;
+      cursor: pointer;
+    }
+
+    label input[type="radio"] {
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+
+    select, input[type="text"] {
+      padding: 10px;
+      border-radius: 8px;
+      border: 2px solid var(--primary);
+      background: rgba(0,0,0,0.5);
+      color: var(--secondary);
+      font-size: 1rem;
+      margin-top: 10px;
+      text-align: center;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    button {
+      background: linear-gradient(90deg, #5DA399, #E6F5F3);
+      color: #000;
+      border: none;
+      border-radius: 30px;
+      padding: 10px 28px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 15px var(--primary);
+    }
+
+    .transient-alert {
+      position: fixed;
+      top: 25px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(93,163,153,0.95);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px var(--accent);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: 2000;
+      font-weight: 600;
+    }
+    .transient-alert.show { opacity: 1; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h2>CalmCare</h2>
+    <nav>
+      <a href="homepage.html">Home</a>
+      <a href="#">Contact</a>
+    </nav>
+  </header>
+
+  <div class="container">
+    <div class="question-box">
+      <h1>Pre-Assessment: Fear of Heights</h1>
+      <p class="question" id="question"></p>
+      <div class="options" id="options"></div>
+      <div class="buttons">
+        <button id="prevBtn">Prev</button>
+        <button id="nextBtn">Next</button>
+      </div>
+    </div>
+  </div>
+
+   <script>
+    // All questions for heights pre-assessment
+    const questions = [
+      { q: "What is your age range?", type: "dropdown", options: ["Below 18", "18–25", "26–35", "36–45", "46–60", "Above 60"] },
+      { q: "What is your gender?", type: "radio", options: ["Male", "Female", "Other"] },
+      { q: "Do you have any known health restrictions?", type: "radio", options: ["Yes", "No"] },
+      { q: "Please specify your health restriction:", type: "text", showIfPreviousYes: true },
+      { q: "Have you ever undergone any therapy before?", type: "radio", options: ["Yes", "No"] },
+      { q: "How often do you avoid high places?", type: "radio", options: ["Always", "Sometimes", "Rarely", "Never"] },
+      { q: "Do you experience dizziness when looking down from heights?", type: "radio", options: ["Yes", "No", "Occasionally"] },
+      { q: "How anxious do you feel when watching scenes involving heights?", type: "radio", options: ["Not at all", "Slightly", "Moderately", "Extremely"] },
+      { q: "Have you ever fainted or felt nauseous due to heights?", type: "radio", options: ["Yes", "No"] },
+      { q: "Would you feel comfortable standing on a balcony of a tall building?", type: "radio", options: ["Yes", "No", "Maybe"] },
+      { q: "Do you experience sweating or trembling near edges?", type: "radio", options: ["Yes", "No", "Sometimes"] },
+      { q: "Would you like to begin your therapy session after this?", type: "radio", options: ["Yes", "No"] }
+    ];
+
+    let currentQuestion = 0;
+    const questionEl = document.getElementById("question");
+    const optionsEl = document.getElementById("options");
+    const nextBtn = document.getElementById("nextBtn");
+    const prevBtn = document.getElementById("prevBtn");
+
+    function transientAlert(msg) {
+      const alert = document.createElement("div");
+      alert.className = "transient-alert";
+      alert.textContent = msg;
+      document.body.appendChild(alert);
+      setTimeout(() => alert.classList.add("show"), 50);
+      setTimeout(() => {
+        alert.classList.remove("show");
+        setTimeout(() => alert.remove(), 400);
+      }, 1300);
+    }
+
+    function loadQuestion() {
+      const q = questions[currentQuestion];
+      questionEl.textContent = q.q;
+      optionsEl.innerHTML = "";
+
+      if (q.type === "radio") {
+        q.options.forEach(opt => {
+          const label = document.createElement("label");
+          label.innerHTML = `<input type="radio" name="answer" value="${opt}"> ${opt}`;
+          optionsEl.appendChild(label);
+        });
+      } else if (q.type === "dropdown") {
+        const select = document.createElement("select");
+        select.name = "answer";
+        select.innerHTML =
+          `<option value="">Select...</option>` +
+          q.options.map(o => `<option value="${o}">${o}</option>`).join("");
+        optionsEl.appendChild(select);
+      } else if (q.type === "text") {
+        const input = document.createElement("input");
+        input.type = "text";
+        input.name = "answer";
+        input.placeholder = "Enter your restriction";
+        optionsEl.appendChild(input);
+      }
+
+      // Hide "Prev" on the first question
+      prevBtn.style.display = currentQuestion === 0 ? "none" : "inline-block";
+      // Change button label on last question
+      nextBtn.textContent = currentQuestion === questions.length - 1 ? "Submit" : "Next";
+    }
+
+    nextBtn.addEventListener("click", () => {
+      const selectedRadio = document.querySelector('input[name="answer"]:checked');
+      const selectedSelect = document.querySelector('select[name="answer"]');
+      const selectedText   = document.querySelector('input[name="answer"][type="text"]');
+      const selected = selectedRadio || selectedSelect || selectedText;
+
+      if (!selected || selected.value === "") {
+        transientAlert("Please answer before proceeding...");
+        return;
+      }
+
+      const prevQ = questions[currentQuestion - 1];
+
+      // If previous question was about health restrictions and answer is "No", skip the text question
+      if (prevQ && prevQ.q.includes("health restrictions") && selected.value === "No") {
+        currentQuestion += 2; // skip "Please specify your health restriction"
+      } else {
+        currentQuestion++;
+      }
+
+      <script>
+  // put this near the top of the script:
+  const heightsVrUrl = "{% url 'vr_module' 'heights' %}";
+
+  // ... your existing JS ...
+
+  // inside the "else { // assessment complete }" block:
+  else {
+    transientAlert("Assessment complete! Redirecting...");
+    setTimeout(() => {
+      window.location.href = heightsVrUrl;  // ✅ use Django route /vr/heights/
+    }, 1500);
+  }
+</script>
+
+      }
+    });
+
+    prevBtn.addEventListener("click", () => {
+      if (currentQuestion > 0) {
+        // If current is the text question that depends on "Yes", jump back 2
+        if (questions[currentQuestion].showIfPreviousYes) {
+          currentQuestion -= 2;
+        } else {
+          currentQuestion--;
+        }
+        loadQuestion();
+      }
+    });
+
+    // Start with the first question
+    loadQuestion();
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Pre-assessment — {{ phobia_name|default:"Fear of Heights" }}{% endblock %}
+
+{% block content %}
+<div class="form-box tall">
+  <form method="post" action="{% url 'vr_module' 'heights' %}">
+    {% csrf_token %}
+    <!-- your existing fields here -->
+    ...
+    <button type="submit">Start VR Therapy</button>
+  </form>
+</div>
+{% endblock %}

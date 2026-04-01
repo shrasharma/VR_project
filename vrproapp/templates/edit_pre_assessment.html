@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Edit Pre-assessment — {{ phobia_name }}{% endblock %}
+
+{% block content %}
+<div class="content-container">
+  <h1>Edit Pre-assessment — {{ phobia_name }}</h1>
+  <p>You can quickly adjust your key details here without filling the whole long form again.</p>
+
+  {% if messages %}
+    <div style="margin:12px 0;">
+    {% for message in messages %}
+      <div style="padding:8px 10px;margin-bottom:6px;
+                  border-radius:6px;
+                  background:rgba(0,255,255,0.06);
+                  border:1px solid rgba(0,255,255,0.2);">
+        {{ message }}
+      </div>
+    {% endfor %}
+    </div>
+  {% endif %}
+
+  <form method="post" style="max-width:600px;margin-top:12px;">
+  {% csrf_token %}
+
+  <!-- Severity -->
+  <div class="form-group" style="margin-bottom:14px;">
+    <label for="{{ form.severity_now.id_for_label }}">
+      How intense is your fear of {{ phobia_name }} right now? (0–10)
+    </label>
+    {{ form.severity_now }}
+    {% if form.severity_now.errors %}
+      <div style="color:#ff8080;font-size:0.9rem;">
+        {{ form.severity_now.errors }}
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Triggers -->
+  <div class="form-group" style="margin-bottom:14px;">
+    <label for="{{ form.main_triggers.id_for_label }}">
+      Which situations trigger your {{ phobia_name }} the most?
+    </label>
+    {{ form.main_triggers }}
+    {% if form.main_triggers.errors %}
+      <div style="color:#ff8080;font-size:0.9rem;">
+        {{ form.main_triggers.errors }}
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Physical symptoms -->
+  <div class="form-group" style="margin-bottom:14px;">
+    <label for="{{ form.physical_symptoms.id_for_label }}">
+      What physical symptoms do you usually feel?
+    </label>
+    {{ form.physical_symptoms }}
+    {% if form.physical_symptoms.errors %}
+      <div style="color:#ff8080;font-size:0.9rem;">
+        {{ form.physical_symptoms.errors }}
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Main goal -->
+  <div class="form-group" style="margin-bottom:14px;">
+    <label for="{{ form.main_goal.id_for_label }}">
+      What is your main goal with VR therapy?
+    </label>
+    {{ form.main_goal }}
+    {% if form.main_goal.errors %}
+      <div style="color:#ff8080;font-size:0.9rem;">
+        {{ form.main_goal.errors }}
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="btns">
+    <button type="submit">Save changes</button>
+  </div>
+</form>
+
+
+  <p style="margin-top:14px;">
+    <a href="{% url 'dashboard' %}">&larr; Back to dashboard</a>
+  </p>
+</div>
+{% endblock %}

@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Dashboard — VR Phobia Therapy{% endblock %}
+
+{% block content %}
+<div class="content-container">
+  <h1>Welcome, {{ request.user.first_name|default:request.user.username }} 👋</h1>
+  <p>From here you can update your account details and continue your therapy journey.</p>
+
+  <hr style="margin:20px 0;border-color:rgba(255,255,255,0.05)">
+
+  <!-- Profile summary -->
+  <section style="margin-bottom:24px;">
+    <h2>Your Profile</h2>
+    <p><strong>Name:</strong> {{ request.user.first_name }} {{ request.user.last_name }}</p>
+    <p><strong>Email:</strong> {{ request.user.email }}</p>
+
+    <a href="{% url 'edit_profile' %}?next={% url 'dashboard' %}"
+       class="cta-btn cta-primary"
+       style="margin-top:10px;display:inline-block;">
+      Edit profile
+    </a>
+  </section>
+
+  <hr style="margin:20px 0;border-color:rgba(255,255,255,0.05)">
+
+  <!-- Therapy shortcuts (all phobias) -->
+  <section style="margin-bottom:24px;">
+    <h2>Start a Therapy Module</h2>
+    <p>You can start or switch your therapy by choosing a phobia below.</p>
+
+    <div class="cards" style="margin-top:16px;">
+      <a href="{% url 'pre_assessment' 'heights' %}" class="card-link">
+        <div class="card">
+          <div class="card-content">
+            <h3>Fear of Heights</h3>
+            <p>Begin or continue your heights exposure program.</p>
+          </div>
+        </div>
+      </a>
+
+      <a href="{% url 'pre_assessment' 'spider' %}" class="card-link">
+        <div class="card">
+          <div class="card-content">
+            <h3>Fear of Spiders</h3>
+            <p>Work through spider exposure modules at your pace.</p>
+          </div>
+        </div>
+      </a>
+
+      <a href="{% url 'pre_assessment' 'publicspeaking' %}" class="card-link">
+        <div class="card">
+          <div class="card-content">
+            <h3>Public Speaking</h3>
+            <p>Practice speaking to virtual audiences safely.</p>
+          </div>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <hr style="margin:20px 0;border-color:rgba(255,255,255,0.05)">
+
+  <!-- Active therapy + summary -->
+  <section>
+    <h2>Your Therapy Journey</h2>
+
+    {% if profile.current_phobia %}
+
+      <p>Current active therapy:</p>
+
+      {% if profile.current_phobia == 'heights' %}
+        <h3>Fear of Heights</h3>
+        <p>Begin or continue your heights exposure program.</p>
+        <a href="{% url 'pre_assessment' 'heights' %}" class="cta-btn cta-primary">
+          Open heights pre-assessment
+        </a>
+
+      {% elif profile.current_phobia == 'spider' %}
+        <h3>Fear of Spiders</h3>
+        <p>Work through spider exposure modules at your pace.</p>
+        <a href="{% url 'pre_assessment' 'spider' %}" class="cta-btn cta-primary">
+          Open spider pre-assessment
+        </a>
+
+      {% elif profile.current_phobia == 'publicspeaking' %}
+        <h3>Public Speaking</h3>
+        <p>Practice speaking to virtual audiences safely.</p>
+        <a href="{% url 'pre_assessment' 'publicspeaking' %}" class="cta-btn cta-primary">
+          Open public speaking pre-assessment
+        </a>
+      {% endif %}
+
+      <!-- 🔹 Summary + edit button: now outside the phobia-specific if/elif -->
+      <hr style="margin:24px 0;border-color:rgba(255,255,255,0.05)">
+
+      <h2>Pre-assessment Summary</h2>
+
+      {% if assessment %}
+        <p><strong>Current phobia:</strong> {{ phobia_name|default:profile.current_phobia }}</p>
+        <p><strong>Severity now (0–10):</strong> {{ assessment.severity_now }}</p>
+        <p><strong>Main triggers:</strong> {{ assessment.main_triggers|default:"Not set yet" }}</p>
+        <p><strong>Physical symptoms:</strong> {{ assessment.physical_symptoms|default:"Not set yet" }}</p>
+        <p><strong>Main goal:</strong> {{ assessment.main_goal|default:"Not set yet" }}</p>
+      {% else %}
+        <p>No pre-assessment saved yet for your active phobia.</p>
+      {% endif %}
+
+      <a href="{% url 'edit_pre_assessment' %}"
+         class="cta-btn cta-secondary"
+         style="margin-top:10px;display:inline-block;">
+        {% if assessment %}Edit pre-assessment details{% else %}Add pre-assessment details{% endif %}
+      </a>
+
+    {% else %}
+      <p>You don’t have an active therapy yet. Choose one to start:</p>
+      <ul>
+        <li><a href="{% url 'pre_assessment' 'heights' %}">Start Fear of Heights</a></li>
+        <li><a href="{% url 'pre_assessment' 'spider' %}">Start Fear of Spiders</a></li>
+        <li><a href="{% url 'pre_assessment' 'publicspeaking' %}">Start Public Speaking</a></li>
+      </ul>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

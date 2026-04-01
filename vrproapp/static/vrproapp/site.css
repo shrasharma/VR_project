@@ -1,0 +1,75 @@
+/* site.css — updated global styles for polished UI */
+
+/* color tokens */
+:root{
+  --bg:#050611;
+  --panel: rgba(6,10,14,0.6);
+  --muted:#9fb3b0;
+  --accent:#28c6b4;
+  --accent-2:#5DA399;
+  --white:#ffffff;
+  --glass: rgba(255,255,255,0.03);
+}
+
+/* base */
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;font-family:"Inter", "Segoe UI", system-ui, Arial, sans-serif;background:var(--bg);color:var(--white);-webkit-font-smoothing:antialiased}
+.container{max-width:1200px;margin:0 auto;padding:0 20px}
+a{color:inherit}
+
+/* header */
+.site-header{position:fixed;top:0;left:0;width:100%;backdrop-filter: blur(8px);background:linear-gradient(180deg, rgba(6,10,14,0.8), rgba(6,10,14,0.45));z-index:9999;border-bottom:1px solid rgba(255,255,255,0.02)}
+.header-inner{display:flex;align-items:center;justify-content:space-between;padding:14px 0}
+.brand{font-weight:700;color:var(--white);text-decoration:none;font-size:1.05rem;letter-spacing:0.3px}
+.main-nav ul{list-style:none;display:flex;gap:14px;margin:0;padding:0;align-items:center}
+.main-nav a{color:var(--muted);text-decoration:none;padding:8px 10px;border-radius:8px;display:inline-block;font-weight:600}
+.main-nav a:hover,.main-nav a.active{color:var(--white);background:rgba(255,255,255,0.02)}
+.button{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:8px 12px;border-radius:10px;color:var(--white);text-decoration:none;font-weight:700}
+.button.ghost{background:transparent;border:1px solid rgba(255,255,255,0.09)}
+.button.accent{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#022;box-shadow:0 12px 36px rgba(40,198,180,0.12);border:none}
+
+/* hamburger */
+.hamburger{display:none;background:none;border:0;cursor:pointer;padding:8px}
+.hamburger span{display:block;width:20px;height:2px;background:var(--muted);margin:4px 0;border-radius:2px}
+
+/* main spacing */
+main{margin-top:84px;position:relative;z-index:2}
+
+/* hero CTA styles */
+.hero-cta{margin-top:22vh;display:flex;flex-direction:column;align-items:center;gap:18px;text-align:center}
+.hero-cta h1{font-size:3.2rem;line-height:1.02;margin:0}
+.hero-cta p{max-width:920px;color:rgba(255,255,255,0.9);font-size:1.05rem}
+.cta-row{display:flex;gap:12px;align-items:center}
+.cta-btn{padding:12px 22px;border-radius:12px;font-weight:700;text-decoration:none}
+.cta-primary{padding:14px 26px;border-radius:14px;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#022;box-shadow:0 22px 48px rgba(40,198,180,0.12)}
+.cta-secondary{padding:12px 20px;border-radius:12px;background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--white)}
+
+/* cards common */
+.card { border-radius:12px; padding:16px; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); box-shadow:0 10px 30px rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.03) }
+
+/* phobia/treatment/testimonial styles have been added in homepage head_extra */
+
+/* footer */
+.site-footer{background:linear-gradient(180deg, rgba(2,6,8,0.6), rgba(2,6,8,0.85));padding:36px 0;margin-top:38px;color:var(--muted)}
+.footer-row{display:flex;gap:30px;flex-wrap:wrap}
+.footer-row .col{flex:1;min-width:180px}
+.footer-row a{color:var(--muted);text-decoration:none}
+.footer-row a:hover{color:var(--white)}
+.copyright{text-align:center;margin-top:18px;color:rgba(255,255,255,0.6)}
+
+/* make animated background sit behind everything */
+.universe { position:fixed; inset:0; z-index:0; pointer-events:none; }
+
+/* small utilities */
+.center{text-align:center}
+.hidden{display:none}
+
+/* responsive */
+@media(max-width:900px){
+  .main-nav{position:fixed;inset:auto 0 0 0;background:linear-gradient(0deg, rgba(2,6,8,0.98), rgba(2,6,8,0.98));transform:translateY(100%);transition:transform .26s ease;display:block;padding:18px 0}
+  .main-nav.open{transform:translateY(0)}
+  .main-nav ul{flex-direction:column;gap:8px}
+  .hamburger{display:block}
+  main{margin-top:72px}
+  .hero-cta h1{font-size:2rem}
+}

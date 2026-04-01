@@ -1,0 +1,42 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VR Exposure Therapy</title>
+<link rel="stylesheet" href="{% static 'vrproapp/styles.css' %}">
+
+</head>
+<body>
+<div class="vr-bg fullpage-bg">
+  <div class="vr-orb"></div>
+  <div class="vr-orb delay"></div>
+  <div class="vr-grid"></div>
+</div>
+
+<div class="content-container">
+  <h1 class="neon-title">Virtual Reality Exposure Therapy</h1>
+  <p class="content-text">
+    VR Exposure Therapy allows patients to face fears in a controlled virtual environment. For acrophobia, 
+    this could mean standing on virtual balconies, tall towers, or open spaces. The key principle is gradual exposure, 
+    where anxiety-inducing situations are introduced progressively while ensuring safety.
+  </p>
+  <p class="content-text">
+    VR therapy has multiple advantages: it is safe, cost-effective, and accessible. It enables repeated exposure 
+    sessions without risk, allows personalization, and can track progress. During therapy, physiological responses 
+    are monitored and difficulty levels can be adjusted in real time. Studies show that VR therapy is effective in 
+    reducing fear responses and building confidence.
+  </p>
+  <p class="content-text">
+    Patients are encouraged to engage actively, maintain realistic expectations, and communicate any discomfort. 
+    The immersive experience helps rewire the brain’s response to fear stimuli, reducing amygdala overactivation 
+    and improving emotional regulation.
+  </p>
+
+  <div class="btns">
+    <button onclick="window.location.href='pre_therapy_questions.html'">Next: Assessment Questions</button>
+  </div>
+</div>
+</body>
+</html>

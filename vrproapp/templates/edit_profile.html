@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Edit Profile — VR Phobia Therapy{% endblock %}
+
+{% block content %}
+<div class="content-container">
+  <h1>Edit your details</h1>
+  <p>You can update your name and email address here. These details are used for login and therapist communication.</p>
+
+  {% if messages %}
+    <div style="margin:12px 0;">
+    {% for message in messages %}
+      <div style="padding:8px 10px;margin-bottom:6px;
+                  border-radius:6px;
+                  background:rgba(0,255,255,0.06);
+                  border:1px solid rgba(0,255,255,0.2);">
+        {{ message }}
+      </div>
+    {% endfor %}
+    </div>
+  {% endif %}
+
+  <form method="post" style="max-width:420px;margin-top:10px;">
+    {% csrf_token %}
+
+    <label for="first_name">First name</label>
+    <input id="first_name" type="text" name="first_name"
+           value="{{ user_obj.first_name }}"
+           style="margin-bottom:10px;">
+
+    <label for="last_name">Last name</label>
+    <input id="last_name" type="text" name="last_name"
+           value="{{ user_obj.last_name }}"
+           style="margin-bottom:10px;">
+
+    <label for="email">Email</label>
+    <input id="email" type="email" name="email"
+           value="{{ user_obj.email }}"
+           required
+           style="margin-bottom:14px;">
+
+    <div class="btns">
+      <button type="submit">Save changes</button>
+    </div>
+  </form>
+
+  <p style="margin-top:18px;font-size:0.95rem;">
+    Want to change your password? You can do that from the login / forgot password flow later.
+  </p>
+</div>
+{% endblock %}

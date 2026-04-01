@@ -1,0 +1,100 @@
+{% comment %} {% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Spider Room VR</title>
+    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
+    <style>
+      #ui {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        z-index: 10;
+      }
+      button {
+        padding: 10px 20px;
+        font-size: 16px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        color: white;
+      }
+      #startBtn {
+        background-color: blue;
+      }
+      #stopBtn {
+        background-color: red;
+      }
+      #startBtn.active {
+        background-color: green;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- UI Buttons -->
+    <div id="ui">
+      <button id="startBtn">Start</button>
+      <button id="stopBtn">Stop</button>
+    </div>
+
+    <!-- A-Frame Scene -->
+    <a-scene>
+      <!-- Camera -->
+      <a-entity position="0 1.6 5" camera look-controls></a-entity>
+
+      <!-- Lights -->
+      <a-entity light="type: ambient; intensity: 1"></a-entity>
+      <a-entity light="type: directional; intensity: 0.8" position="2 4 3"></a-entity>
+
+      <!-- Room -->
+      <a-entity gltf-model="assets/room_blanck.glb" scale="2 2 2" position="0 0 0"></a-entity>
+
+      <!-- Spider -->
+      <a-entity id="spider"
+        gltf-model="assets/movingspider.glb"
+        scale="0.05 0.05 0.05"
+        position="0 0 0"
+        rotation="0 180 0"
+        animation-mixer="clip: Walk; loop: repeat; timeScale: 1; enabled: false">
+      </a-entity>
+    </a-scene>
+
+    <script>
+      const spider = document.getElementById("spider");
+      const startBtn = document.getElementById("startBtn");
+      const stopBtn = document.getElementById("stopBtn");
+
+      let isWalking = false;
+      let moveInterval;
+
+      // Start Button
+      startBtn.addEventListener("click", () => {
+        spider.setAttribute("animation-mixer", "clip: Walk; loop: repeat; timeScale: 1; enabled: true");
+        isWalking = true;
+        startBtn.classList.add("active");
+
+        // Move spider forward slowly
+        moveInterval = setInterval(() => {
+          if (!isWalking) return;
+          let pos = spider.getAttribute("position");
+          pos.z -= 0.02; // crawl forward
+          if (pos.z < -3) pos.z = -3; // stop at room edge
+          spider.setAttribute("position", pos);
+        }, 50);
+      });
+
+      // Stop Button
+      stopBtn.addEventListener("click", () => {
+        spider.setAttribute("animation-mixer", "enabled: false");
+        isWalking = false;
+        startBtn.classList.remove("active");
+        clearInterval(moveInterval);
+      });
+    </script>
+  </body>
+</html> {% endcomment %}

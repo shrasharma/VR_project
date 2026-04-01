@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+  <h2>Dashboard</h2>
+  <p>Welcome, {{ user.first_name|default:user.username }} ({{ user.email }})</p>
+
+  {% if profile %}
+    <h3>Your Profile</h3>
+    <ul>
+      <li><strong>Role:</strong> {{ profile.role|default:"-" }}</li>
+      <li><strong>Age:</strong> {{ profile.age|default:"-" }}</li>
+      <li><strong>Gender:</strong> {{ profile.gender|title|default:"-" }}</li>
+      {% if profile.role == "therapist" %}
+        <li><strong>License:</strong> {{ profile.license_no|default:"-" }}</li>
+        <li><strong>Experience:</strong> {{ profile.experience|default:"-" }} years</li>
+      {% endif %}
+      {% if profile.role == "researcher" %}
+        <li><strong>Institution:</strong> {{ profile.institution|default:"-" }}</li>
+      {% endif %}
+    </ul>
+  {% else %}
+    <p>No profile found (you can add one later).</p>
+  {% endif %}
+
+  <p><a href="{% url 'pre_therapy' %}">Start Pre-Therapy Questions</a></p>
+{% endblock %}

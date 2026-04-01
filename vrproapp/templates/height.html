@@ -1,0 +1,262 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>VR Exposure Therapy – Fear of Heights</title>
+  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+  <script src="https://unpkg.com/aframe-physics-system@5.1.2/dist/aframe-physics-system.umd.js"></script>
+  <style>body{margin:0;overflow:hidden}</style>
+</head>
+<body>
+<a-scene physics="gravity:-9.8" background="color:#87ceeb">
+  <a-assets>
+  <a-asset-item id="cityModel"
+                src="{% static 'vrproapp/models/buildings.glb' %}"></a-asset-item>
+  <a-asset-item id="avatar"
+                src="{% static 'vrproapp/models/human.glb' %}"></a-asset-item>
+</a-assets>
+
+  <a-sky color="#87ceeb"></a-sky>
+  <a-plane static-body rotation="-90 0 0" width="1000" height="1000" color="#b0bec5"></a-plane>
+
+  <!-- Tall tower + rooftop -->
+  <a-box color="#757575" width="10" depth="10" height="100" position="0 100 0"></a-box>
+  <a-box id="rooftop" static-body color="#9e9e9e" width="10" depth="10" height="1" position="0 100 0"></a-box>
+
+  <!-- City -->
+  <a-entity gltf-model="#cityModel" scale="5 5 5" position="0 0 0"></a-entity>
+  <a-entity id="city"></a-entity>
+
+  <!-- PLAYER RIG -->
+  <a-entity id="rig" position="0 101 0" dynamic-body="mass:80;shape:box;linearDamping:0.15;">
+    <!-- Camera with normal A-Frame controls -->
+    <a-entity id="cam"
+              camera
+              look-controls="pointerLockEnabled:true"
+              position="0 1.6 0">hei
+    </a-entity>
+
+    <!-- Avatar model just in front of camera -->
+    <a-entity id="human"
+              gltf-model="#avatar"
+              position="0 -1.6 -0.8"
+              scale="0.8 0.8 0.8"
+              rotation="180 180 180"
+              animation-mixer="clip: Idle; loop: repeat; timeScale: 1">
+    </a-entity>
+  </a-entity>
+
+  <script>
+   /* -------- Surrounding skyline -------- */
+const city = document.getElementById("city");
+for (let r = 0; r < 6; r++) {
+  const radius = 350 + r * 120,
+        count  = 30 + r * 6;
+  for (let i = 0; i < count; i++) {
+    const a = (i / count) * Math.PI * 2,
+          x = Math.cos(a) * radius,
+          z = Math.sin(a) * radius,
+          h = Math.random() * 160;
+
+    const b = document.createElement("a-box");
+    b.setAttribute("color", ["#90a4ae","#607d8b","#78909c"][Math.floor(Math.random()*3)]);
+    b.setAttribute("width",  20 + Math.random() * 10);
+    b.setAttribute("depth",  20 + Math.random() * 10);
+    b.setAttribute("height", h);
+    b.setAttribute("position", `${x} ${h/2} ${z}`);
+    city.appendChild(b);
+  }
+}
+
+
+    /* -------- Respawn if fallen -------- */
+    AFRAME.registerComponent('fall-respawn',{
+      tick:function(){
+        const rig=document.getElementById('rig');
+        const pos=rig.object3D.position;
+        if(pos.y<1){
+          rig.body.velocity.set(0,0,0);
+          rig.setAttribute('position',{x:0,y:201,z:0});
+        }
+      }
+    });
+    document.querySelector('a-scene').setAttribute('fall-respawn','');
+
+    /* -------- Keep avatar synced with camera -------- */
+    AFRAME.registerComponent('avatar-follow',{
+      tick:function(){
+        const cam=document.getElementById('cam').object3D;
+        const human=this.el.object3D;
+        const worldPos=new THREE.Vector3();
+        cam.getWorldDirection(worldPos);
+        // Position slightly in front of camera, at body level
+        human.position.copy(cam.position).add(worldPos.multiplyScalar(-0.8));
+        human.position.y=cam.position.y-1.6;
+        // Face same way as camera
+        const euler=new THREE.Euler().setFromQuaternion(cam.quaternion,'YXZ');
+        human.rotation.y=euler.y;
+      }
+    });
+    document.getElementById('human').setAttribute('avatar-follow','');
+  </script>
+
+
+  <script>
+AFRAME.registerComponent('rig-physics-move', {
+  schema: { speed: { default: 6 } },
+  init() {
+    this.keys = {};
+    window.addEventListener('keydown', e => this.keys[e.code] = true);
+    window.addEventListener('keyup',   e => delete this.keys[e.code]);
+    this.rig   = document.getElementById('rig');
+    this.human = document.getElementById('human');
+    this.cam   = document.getElementById('cam');
+  },
+  tick() {
+    if (!this.rig.body || !this.cam || !this.cam.object3D) return;
+
+    const k = this.keys;
+    const forward = (k['KeyW'] || k['ArrowUp']) ? 1 : 0;
+    const back    = (k['KeyS'] || k['ArrowDown']) ? 1 : 0;
+    const left    = (k['KeyA'] || k['ArrowLeft']) ? 1 : 0;
+    const right   = (k['KeyD'] || k['ArrowRight']) ? 1 : 0;
+
+    const inputX = right - left;
+    const inputZ = forward - back;
+
+    if (inputX || inputZ) {
+      // Camera forward (yaw) for movement direction
+      const fwd = new THREE.Vector3();
+      this.cam.object3D.getWorldDirection(fwd);
+      fwd.y = 0; fwd.normalize();
+
+      // Right vector
+      const rightV = new THREE.Vector3().crossVectors(new THREE.Vector3(0,1,0), fwd);
+
+      // World-space move dir
+      const move = new THREE.Vector3().copy(fwd).multiplyScalar(inputZ)
+                                      .add(rightV.multiplyScalar(inputX))
+                                      .normalize();
+
+      // Apply horizontal velocity to the physics body (preserve gravity Y)
+      const vy = this.rig.body.velocity.y;
+      this.rig.body.velocity.set(move.x * this.data.speed, vy, move.z * this.data.speed);
+
+      // Face where we're moving & play WALK
+      this.human.object3D.rotation.y = Math.atan2(move.x, move.z);
+      this.human.setAttribute('animation-mixer', 'clip: Walk; loop: repeat; timeScale: 1');
+    } else {
+      // Stop -> IDLE and gently damp horizontal speed
+      this.human.setAttribute('animation-mixer', 'clip: Idle; loop: repeat; timeScale: 1');
+      this.rig.body.velocity.x *= 0.9;
+      this.rig.body.velocity.z *= 0.9;
+    }
+  }
+});
+
+// Activate it on your existing rig
+document.getElementById('rig').setAttribute('rig-physics-move', 'speed:6');
+</script>
+
+
+<script>
+AFRAME.registerComponent('kinematic-move-fall', {
+  schema: { speed: {default: 4.5}, gravity: {default: -12}, roofId: {default: 'rooftop'} },
+  init() {
+    this.keys = {};
+    window.addEventListener('keydown', e => this.keys[e.code] = true);
+    window.addEventListener('keyup',   e => delete this.keys[e.code]);
+    this.rig = document.getElementById('rig');
+    this.cam = document.getElementById('cam');
+    this.human = document.getElementById('human');
+    this.roof = document.getElementById(this.data.roofId);
+    this.velY = 0;
+    this.falling = false;
+    this.tmp = new THREE.Vector3();
+  },
+  tick(t, dt) {
+    if (!this.rig || !this.cam || !this.roof) return;
+    const dtSec = Math.min(0.05, dt/1000 || 0.016);
+
+    // Roof bounds
+    const halfW = (this.roof.getAttribute('width')  || 10) / 2;
+    const halfD = (this.roof.getAttribute('depth')  || 10) / 2;
+    const roofPos = this.roof.object3D.position;
+
+    // Input
+    const k = this.keys;
+    const f = (k['KeyW']||k['ArrowUp'])    ? 1 : 0;
+    const b = (k['KeyS']||k['ArrowDown'])  ? 1 : 0;
+    const l = (k['KeyA']||k['ArrowLeft'])  ? 1 : 0;
+    const r = (k['KeyD']||k['ArrowRight']) ? 1 : 0;
+
+    // Camera yaw vectors
+    const fwd = new THREE.Vector3();
+    this.cam.object3D.getWorldDirection(fwd);
+    fwd.y = 0; fwd.normalize();
+    const right = new THREE.Vector3().crossVectors(new THREE.Vector3(0,1,0), fwd).normalize();
+
+    // Desired horizontal motion
+    this.tmp.set(0,0,0);
+    if (f) this.tmp.add(fwd);
+    if (b) this.tmp.sub(fwd);
+    if (r) this.tmp.add(right);
+    if (l) this.tmp.sub(right);
+    if (this.tmp.lengthSq()>0) this.tmp.normalize().multiplyScalar(this.data.speed * dtSec);
+
+    const pos = this.rig.object3D.position;
+
+    if (!this.falling) {
+      // Move across rooftop
+      pos.x += this.tmp.x;
+      pos.z += this.tmp.z;
+      // Stick to roof height
+      pos.y = roofPos.y + 1;
+
+      // Play walk when moving, else idle
+      if (this.human) {
+        if (this.tmp.lengthSq()>0) {
+          
+          this.human.setAttribute('animation-mixer','clip: Walk; loop: repeat; timeScale: 1');
+        } else {
+          this.human.setAttribute('animation-mixer','clip: Idle; loop: repeat; timeScale: 1');
+          
+        }
+      }
+
+      // Edge check -> start falling
+      const rx = pos.x - roofPos.x;
+      const rz = pos.z - roofPos.z;
+      if (Math.abs(rx) > halfW || Math.abs(rz) > halfD) {
+        this.falling = true;
+        this.velY = 0; // start from rest
+      }
+    } else {
+      // Falling
+      this.velY += this.data.gravity * dtSec;
+      pos.y += this.velY * dtSec;
+
+      // Optional air control (tiny)
+      pos.x += this.tmp.x * 0.4;
+      pos.z += this.tmp.z * 0.4;
+
+      // Reset when below ground
+      if (pos.y < 1) {
+        this.falling = false;
+        this.velY = 0;
+        this.rig.setAttribute('position', {x: roofPos.x, y: roofPos.y + 1, z: roofPos.z});
+        if (this.human) this.human.setAttribute('animation-mixer','clip: Idle; loop: repeat; timeScale: 1');
+      }
+    }
+  }
+});
+
+// Attach to your existing rig
+document.getElementById('rig').setAttribute('kinematic-move-fall','speed:4.5; roofId: rooftop');
+</script>
+
+
+</a-scene>
+</body>
+</html>

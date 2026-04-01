@@ -1,0 +1,145 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pre-Therapy Assessment</title>
+<link rel="stylesheet" href="{% static 'vrproapp/styles.css' %}">
+
+</head>
+<body>
+<div class="vr-bg fullpage-bg">
+  <div class="vr-orb"></div>
+  <div class="vr-orb delay"></div>
+  <div class="vr-grid"></div>
+</div>
+
+<div class="form-box therapy-box tall">
+  <h2 class="neon-title">Pre-Therapy Assessment</h2>
+  <form id="assessmentForm">
+    <!-- Step 1 -->
+    <div class="form-step active">
+      <label>Age Interval</label>
+      <select required>
+        <option value="" disabled selected>Select age interval</option>
+        <option>10-20</option>
+        <option>21-30</option>
+        <option>31-40</option>
+        <option>41-50</option>
+        <option>50+</option>
+      </select>
+      <div class="btns">
+        <button type="button" class="next-btn">Next</button>
+      </div>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="form-step">
+      <label>Gender</label>
+      <select required>
+        <option value="" disabled selected>Select gender</option>
+        <option>Male</option>
+        <option>Female</option>
+        <option>Other</option>
+      </select>
+      <div class="btns">
+        <button type="button" class="prev-btn">Back</button>
+        <button type="button" class="next-btn">Next</button>
+      </div>
+    </div>
+
+    <!-- Step 3 -->
+    <div class="form-step">
+      <label>Previous Therapy Experience?</label>
+      <select required>
+        <option value="" disabled selected>Choose an option</option>
+        <option>Yes</option>
+        <option>No</option>
+      </select>
+      <div class="btns">
+        <button type="button" class="prev-btn">Back</button>
+        <button type="button" class="next-btn">Next</button>
+      </div>
+    </div>
+
+    <!-- Step 4 -->
+    <div class="form-step">
+      <label>Frequency of Fear</label>
+      <select required>
+        <option value="" disabled selected>Select frequency</option>
+        <option>Daily</option>
+        <option>Weekly</option>
+        <option>Monthly</option>
+        <option>Rarely</option>
+      </select>
+      <div class="btns">
+        <button type="button" class="prev-btn">Back</button>
+        <button type="button" class="next-btn">Next</button>
+      </div>
+    </div>
+
+    <!-- Step 5 -->
+    <div class="form-step">
+      <label>Any health restrictions?</label>
+      <select id="healthSelect" required>
+        <option value="" disabled selected>Choose an option</option>
+        <option value="no">No</option>
+        <option value="yes">Yes</option>
+      </select>
+      <div id="healthIssueStep" class="hidden">
+        <label>Please describe your health issue</label>
+        <input type="text" placeholder="e.g., heart condition, epilepsy">
+      </div>
+      <div class="btns">
+        <button type="button" class="prev-btn">Back</button>
+        <button type="submit" id="start-btn">Start Therapy</button>
+      </div>
+    </div>
+  </form>
+</div>
+
+<script>
+const steps = document.querySelectorAll(".form-step");
+const nextBtns = document.querySelectorAll(".next-btn");
+const prevBtns = document.querySelectorAll(".prev-btn");
+let currentStep = 0;
+
+// Show next step
+nextBtns.forEach(btn => {
+  btn.addEventListener("click", () => {
+    steps[currentStep].classList.remove("active");
+    currentStep++;
+    steps[currentStep].classList.add("active");
+  });
+});
+
+// Show previous step
+prevBtns.forEach(btn => {
+  btn.addEventListener("click", () => {
+    steps[currentStep].classList.remove("active");
+    currentStep--;
+    steps[currentStep].classList.add("active");
+  });
+});
+
+// Conditional health question
+const healthSelect = document.getElementById("healthSelect");
+const healthIssueStep = document.getElementById("healthIssueStep");
+healthSelect.addEventListener("change", () => {
+  if (healthSelect.value === "yes") {
+    healthIssueStep.classList.remove("hidden");
+  } else {
+    healthIssueStep.classList.add("hidden");
+  }
+});
+
+// Submit form
+document.getElementById("assessmentForm").addEventListener("submit", e => {
+  e.preventDefault();
+  // Save responses if needed
+  window.location.href = "therapy_session.html"; // Start VR therapy
+});
+</script>
+</body>
+</html>

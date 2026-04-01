@@ -1,0 +1,201 @@
+/* ===== Reset ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+body {
+  background: #0a0a0f;
+  color: #fff;
+  height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ===== VR Background ===== */
+.vr-bg {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+}
+
+.vr-orb {
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  top: 20%;
+  left: 10%;
+  background: radial-gradient(circle, #00f, transparent);
+  animation: float 8s ease-in-out infinite;
+  opacity: 0.4;
+}
+
+.vr-orb.delay {
+  top: 60%;
+  left: 70%;
+  background: radial-gradient(circle, #0ff, transparent);
+  animation-delay: 4s;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-30px); }
+}
+
+.vr-grid {
+  position: absolute;
+  bottom: 0;
+  width: 200%;
+  height: 200px;
+  background: repeating-linear-gradient(to right, rgba(0,255,255,0.2) 0 2px, transparent 2px 40px),
+              repeating-linear-gradient(to top, rgba(0,255,255,0.2) 0 2px, transparent 2px 40px);
+  transform: perspective(600px) rotateX(60deg);
+  animation: gridmove 6s linear infinite;
+}
+
+@keyframes gridmove {
+  from { transform: perspective(600px) rotateX(60deg) translateY(0); }
+  to { transform: perspective(600px) rotateX(60deg) translateY(40px); }
+}
+
+/* ===== Full-page content pages ===== */
+.content-container {
+  width: 80%;
+  max-width: 900px;
+  margin: 60px auto;
+  padding: 30px;
+  color: #a0f0ff;
+  text-align: left;
+}
+
+.content-container p {
+  margin-bottom: 18px;
+  line-height: 1.6;
+  font-size: 1.05rem;
+}
+
+.content-container h1 {
+  font-size: 2.2rem;
+  text-align: center;
+  color: #0ff;
+  margin-bottom: 25px;
+  text-shadow: 0 0 10px #0ff, 0 0 20px #0ff;
+}
+
+/* ===== Buttons ===== */
+button {
+  padding: 12px 20px;
+  font-size: 1rem;
+  border-radius: 10px;
+  border: 2px solid #0ff;
+  background: linear-gradient(45deg, #0ff, #00f);
+  color: #fff;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+button:hover {
+  background: linear-gradient(45deg, #00f, #0ff);
+  box-shadow: 0 0 12px #0ff;
+}
+
+.btns {
+  text-align: center;
+  margin-top: 30px;
+}
+
+/* ===== Multi-step form box (Pre-Therapy Questions) ===== */
+.form-box {
+  width: 400px;
+  margin: 50px auto;
+  padding: 25px 20px;
+  background: rgba(20, 20, 30, 0.95);
+  border-radius: 15px;
+  box-shadow: 0 0 20px #0ff;
+  text-align: center;
+}
+
+.form-box.tall {
+  min-height: 540px;          
+  display: flex;
+  flex-direction: column;
+  justify-content: center;    /* Center elements vertically */
+  align-items: center;        /* Center elements horizontally */
+  padding: 40px 30px;         
+}
+
+/* ===== Form Steps (Multi-step) ===== */
+.form-step {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;   /* Center vertically within step */
+  align-items: center;       /* Center horizontally */
+  gap: 20px;                 /* Spacing between elements */
+  display: none;             /* Hide by default */
+}
+
+.form-step.active {
+  display: flex;             /* Show active step */
+  animation: fadeIn 0.6s ease-in-out;
+}
+
+.hidden { display: none; }
+
+/* ===== Neon Titles ===== */
+.neon-title {
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+  color: #0ff;
+  text-shadow: 0 0 10px #0ff, 0 0 20px #0ff;
+}
+
+/* ===== Inputs & Dropdowns ===== */
+input, select {
+  width: 100%;                /* Full width of form box */
+  max-width: 360px;           /* Restrict max width */
+  padding: 12px 15px;         /* Extra horizontal padding */
+  margin: 10px 0;
+  border: 2px solid #0ff;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.05);
+  color: #fff;
+  appearance: none;
+  font-size: 1rem;
+}
+
+input:focus, select:focus {
+  border-color: #00f;
+  box-shadow: 0 0 10px #00f;
+}
+
+select option {
+  background: #111;
+  color: #fff;
+}
+
+/* ===== Checkbox Styling ===== */
+label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  padding: 0;
+  accent-color: #0ff;
+}
+
+/* ===== Animations ===== */
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}

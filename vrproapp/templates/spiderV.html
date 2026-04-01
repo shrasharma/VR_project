@@ -1,0 +1,40 @@
+{% comment %} {% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Spider Room VR - CalmCare</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
+  <!-- your CSS as before -->
+</head>
+<body>
+  <!-- UI as before -->
+
+  <a-scene background="color: #050406" fog="type: exponential; density: 0.02" renderer="colorManagement: true;">
+   <a-assets timeout="600000">
+
+  <!-- 3D MODELS (use Django static) -->
+  <a-asset-item id="roomModel"
+                src="{% static 'vrproapp/models/horror_room.glb' %}"></a-asset-item>
+
+  <a-asset-item id="websModel"
+                src="{% static 'vrproapp/models/webs.glb' %}"></a-asset-item>
+
+  <a-asset-item id="spiderModel"
+                src="{% static 'vrproapp/models/movingspider.glb' %}"></a-asset-item>
+
+  <!-- AUDIO (also via static) -->
+  <audio id="ambientAudio"
+         src="{% static 'vrproapp/audio/horror_ambient.wav' %}"
+         preload="auto"></audio>
+
+  <audio id="jumpAudio"
+         src="{% static 'vrproapp/audio/jump_scare.mp3' %}"
+         preload="auto"></audio>
+</a-assets>
+
+  <!-- your big <script> … </script> block stays the same -->
+</body>
+</html> {% endcomment %}
